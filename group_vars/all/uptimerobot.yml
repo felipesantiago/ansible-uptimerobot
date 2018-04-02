@@ -1,0 +1,30 @@
+---
+uptimerobot_targets:
+  - { name: "Google", url: "https://gogole.com", state: "absent"}
+  - { name: "Slashdot", url: "https://slashdot.org", state: "present"}
+
+# alert_contacts - optional (the alert contacts to be notified when the monitor goes up/down.Multiple alert_contact>ids can be sent like alert_contacts=457_0_0-373_5_0-8956_2_3 where alert_contact>ids are seperated with - and threshold + recurrence are seperated with _. 
+# For ex: alert_contacts=457_5_0 refers to 457 being the alert_contact>id, 5 being the threshold and 0 being the recurrence. As the threshold and recurrence is only available in the Pro Plan, they are always 0 in the Free Plan)
+# On https://uptimerobot.com/api you can get some examples on how to get the AlertContacts IDs
+alert_contacts: ""
+
+# alertcontact>type	
+# 1 - SMS
+# 2 - E-mail
+# 3 - Twitter DM
+# 4 - Boxcar
+# 5 - Web-Hook
+# 6 - Pushbullet
+# 7 - Zapier
+# 9 - Pushover
+# 10 - HipChat
+# 11 - Slack
+
+# alertcontact>status	
+# 0 - not activated
+# 1 - paused
+# 2 - active
+
+uptimerobot_alert_entries:
+  - { alert_name: "Slack",  alert_type: "11", status: "2", value: "https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXX", state: "present" }
+  - { alert_name: "E-mail",  alert_type: "2", status: "2", value: "example@example.com", state: "present" }

@@ -1,0 +1,6 @@
+--- 
+- name: manage uptimerobot
+  hosts: localhost
+
+  roles:
+    - uptimerobot

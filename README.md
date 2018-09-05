@@ -1,9 +1,9 @@
 # Ansible uptimerobot module
 
 
-Add/remove sites to uptimerobot service. 
+Add/remove sites to uptimerobot service.
 
-Ansible's official module currently only supports `start`and `pause`. 
+Ansible's official module currently only supports `start`and `pause`.
 
 
 ## Configuration exemple:
@@ -39,7 +39,7 @@ $ ansible-vault encrypt group_vars/all/uptimerobot_api_key.yml
 $ ansible-playbook main.yml --vault-pass your_vault_pass_file
 ```
 
-## TODO 
+## TODO
 
 - [x] Add alert support for monitors
 - [x] Alert management support

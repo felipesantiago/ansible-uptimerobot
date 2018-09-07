@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
-import requests, json
-import requests_cache
+from ansible.module_utils.request_cache import RequestCache
 from ansible.module_utils.basic import AnsibleModule
 
-requests_cache.install_cache(backend='memory', expire_after=300)
-
+# Time in seconds
+CACHE_TIMEOUT = 300
 API_KEY = ''
 API_BASE = 'https://api.uptimerobot.com/v2/'
 API_ACTIONS = dict(
@@ -27,8 +26,7 @@ def callApi(status, data={}):
     }
 
     payload = dict(base_payload, **data)
-    response = requests.request('POST', api_url, data=payload, headers=headers)
-    return json.loads(response.text)
+    return request_cache.request('POST', api_url, payload, headers)
 
 def getMonitorID(url):
     monitors = callApi('status')
@@ -66,7 +64,7 @@ def deleteMonitor(url):
 
     resultmonitor = callApi('delete', payload)
     # Invalidate cache to avoid false positives
-    requests_cache.clear()
+    request_cache.clear()
     if resultmonitor['stat'] == 'ok':
         return 'ok'
 
@@ -104,18 +102,7 @@ def startMonitor(url):
 
     return resultmonitor['error']['message']
 
-def main():
-    module = AnsibleModule(
-        argument_spec=dict(
-            alert_contacts=dict(type='str', required=False),
-            api_key=dict(type='str', required=True),
-            name=dict(type='str', required=True),
-            state=dict(required=True, choices=['present', 'absent', 'started', 'paused']),
-            url=dict(type='str', required=True)
-        )
-    )
-
-    API_KEY = module.params['api_key']
+def main(module):
     alert_contacts = module.params['alert_contacts']
     name = module.params['name']
     state = module.params['state']
@@ -153,5 +140,18 @@ def main():
         module.fail_json(msg='invalid state')
 
 if __name__ == '__main__':
-    main()
+    request_cache = RequestCache(cache_time=CACHE_TIMEOUT)
+
+    module = AnsibleModule(
+        argument_spec=dict(
+            alert_contacts=dict(type='str', required=False),
+            api_key=dict(type='str', required=True),
+            name=dict(type='str', required=True),
+            state=dict(required=True, choices=['present', 'absent', 'started', 'paused']),
+            url=dict(type='str', required=True)
+        )
+    )
+
+    API_KEY = module.params['api_key']
+    main(module)
 

@@ -5,11 +5,10 @@
     api_key: "{{ uptimerobot_api_key }}"
     name: "{{ item.name }}"
     alert_contacts: "{{ alert_contacts }}"
-    url: "{{ item.url }}" 
+    url: "{{ item.url }}"
     state: "{{ item.state }}"
-  with_items: 
-   - "{{ uptimerobot_targets }}" 
-
+  with_items:
+  - "{{ uptimerobot_targets }}"
 
 - name: manage uptimerobot alert entries
   tags: uptimerobot
@@ -17,8 +16,8 @@
     api_key: "{{ uptimerobot_api_key }}"
     alert_name: "{{ item.alert_name }}"
     alert_type: "{{ item.alert_type }}"
-    value: "{{ item.value }}" 
+    value: "{{ item.value }}"
     state: "{{ item.state }}"
     status: "{{ item.status }}"
-  with_items: 
-   - "{{ uptimerobot_alert_entries }}" 
+  with_items:
+  - "{{ uptimerobot_alert_entries }}"

@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
-import requests, json, urllib
+import urllib
+from ansible.module_utils.request_cache import RequestCache
 from ansible.module_utils.basic import AnsibleModule
 
+CACHE_TIMEOUT = 300
 API_KEY = ''
 API_BASE = 'https://api.uptimerobot.com/v2/'
 API_ACTIONS = dict(
@@ -23,8 +25,7 @@ def callApi(status, data={}):
     }
 
     payload = dict(base_payload, **data)
-    response = requests.request('POST', api_url, data=payload, headers=headers)
-    return json.loads(response.text)
+    return request_cache.request('POST', api_url, payload, headers)
 
 def getAlertContactID(value):
     getid = callApi('getid')
@@ -38,7 +39,7 @@ def newAlertContact(alert_type, alert_name, value, status):
     payload = {
         'type': alert_type,
         'friendly_name': urllib.quote_plus(alert_name),
-        'value': urllib.quote_plus(value),
+        'value': value,
         'status': status
     }
     newalert = callApi('new', payload)
@@ -66,19 +67,7 @@ def deleteAlertContact(value):
         return result['error']['message']
 
 
-def main():
-    module = AnsibleModule(
-        argument_spec=dict(
-            api_key=dict(type='str', required=True),
-            alert_name=dict(type='str', required=True),
-            state=dict(required=True, choices=['present', 'absent']),
-            status=dict(type='str', required=True),
-            alert_type=dict(type='str', required=True),
-            value=dict(type='str', required=True)
-        )
-    )
-
-    API_KEY = module.params['api_key']
+def main(module):
     alert_name = module.params['alert_name']
     state = module.params['state']
     status = module.params['status']
@@ -107,4 +96,17 @@ def main():
         module.fail_json(msg='invalid state')
 
 if __name__ == '__main__':
-    main()
+    request_cache = RequestCache(cache_time=CACHE_TIMEOUT)
+    module = AnsibleModule(
+        argument_spec=dict(
+            api_key=dict(type='str', required=True),
+            alert_name=dict(type='str', required=True),
+            state=dict(required=True, choices=['present', 'absent']),
+            status=dict(type='str', required=True),
+            alert_type=dict(type='str', required=True),
+            value=dict(type='str', required=True)
+        )
+    )
+
+    API_KEY = module.params['api_key']
+    main(module)
